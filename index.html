@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="listaTelefonica">
+<!-- ng-app é uma diretiva define o nome da aplicação define as fronteiras da aplicação
+    diretivas são extensões da linguagem html que permitem a implantação de novos 
+    comportamentos de forma declarativa.
+    Dando mais poder ao html    
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Lista Telefonica</title>
+
+    <script src="lib/angular.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
+
+    <style>
+        .jumbotron {
+            width: 400px;
+            margin-top: 20px;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .table {
+            margin-top: 2px;
+        }
+
+        .form-control {
+            margin-bottom: 5px;
+        }
+
+        .selecionado {
+            background-color: darkgray;
+        }
+
+        .negrito {
+            font-style: bold;
+        }
+    </style>
+
+    <script>
+        // o [] representa os modulos que importaremos do angular
+        angular.module('listaTelefonica', []);
+
+        // define o controller passando de callback uma function que recebe o $scope
+        angular.module('listaTelefonica').controller('listaTelefonicaCrtl', function ($scope) {
+            $scope.app = "Lista Telefonica";
+
+
+
+            $scope.operadoras = [{
+                    nome: "Oi",
+                    codigo: 14,
+                    categoria: "Celular"
+                },
+                {
+                    nome: "Vivo",
+                    codigo: 15,
+                    categoria: "Celular"
+                },
+                {
+                    nome: "Tim",
+                    codigo: 41,
+                    categoria: "Celular"
+                },
+                {
+                    nome: "GVT",
+                    codigo: 25,
+                    categoria: "Fixo"
+                },
+                {
+                    nome: "Embratel",
+                    codigo: 21,
+                    categoria: "Fixo"
+                }
+            ];
+
+            $scope.cores = [{
+                    nome: "Vermelho",
+                    valor: "red"
+                },
+                {
+                    nome: "Azul",
+                    valor: "blue"
+                },
+                {
+                    nome: "Verde",
+                    valor: "green"
+                },
+                {
+                    nome: "Rosa",
+                    valor: "pink"
+                }
+            ];
+
+            $scope.contatos = [{
+                    nome: "Luis",
+                    telefone: "9999-9999",
+                    operadora: {
+                        nome: $scope.operadoras[0].nome
+                    },
+                    cor: {
+                        valor: $scope.cores[0].valor
+                    }
+                },
+                {
+                    nome: "Joao",
+                    telefone: "9999-8888",
+                    operadora: {
+                        nome: $scope.operadoras[2].nome
+                    },
+                    cor: {
+                        valor: $scope.cores[1].valor
+                    }
+                },
+                {
+                    nome: "Paulo",
+                    telefone: "9999-7777",
+                    operadora: {
+                        nome: $scope.operadoras[1].nome
+                    },
+                    cor: {
+                        valor: $scope.cores[2].valor
+                    }
+                },
+                {
+                    nome: "Maria",
+                    telefone: "9999-6666",
+                    operadora: {
+                        nome: $scope.operadoras[3].nome
+                    },
+                    cor: {
+                        valor: $scope.cores[3].valor
+                    }
+                },
+            ];
+
+            $scope.adicionarContato = function (contato) {
+                // o angular.copy cria uma copia do objeto contato e salva em memoria
+                $scope.contatos.push(angular.copy(contato));
+                // delete como o proprio nome diz deleta o $scope.contato após ser salvo
+                delete $scope.contato;
+            }
+
+            $scope.apagarContatos = function (contatos) {
+                // estudar o filter
+                $scope.contatos = contatos.filter(function (contato) {
+                    if (!contato.selecionado) {
+                        return contato;
+                    }
+                });
+            }
+
+            $scope.isSelecionado = function (contatos) {
+                return contatos.some(function (contato) {
+                    return contato.selecionado;
+                });
+            }
+        });
+    </script>
+
+</head>
+
+<!-- O ng-controller define qual controller a parte do html irá responder 
+    não importa qual parte pode ser div body ou qualquer outra tag  -->
+
+<body ng-controller="listaTelefonicaCrtl">
+    <div class="jumbotron">
+        <!-- a diretiva ng-bind faz o bind de uma declaração no controller funciona parecida com o
+        {{}} interpolação da expressao
+            a diferença entre eles é que se houver alguma lentidão na aplicação o {{}} mostra a declaração e o
+            ng-bind não
+        {{objeto. valor + "Este é o valor da variavel"}} consigo concatenar 
+          -->
+        <h3 ng-bind="app"></h3>
+        <table ng-show="contatos.length > 0" class="table">
+            <!-- tr = tablerow é cada linha da tabela  -->
+            <tr>
+                <!-- th = table header define o título de cada coluna  -->
+                <th></th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Operadora</th>
+                <th></th>
+            </tr>
+
+            <!-- A diretiva ng-repeat como o proprio nome diz se refere a um loop que passa por todos elementos
+            de um array  
+            ng-class atribui uma classe css para quando os parametros dentro dela são verdadeiros
+            neste caso ele está adicionado as classes selecionado e negrito a tr quando o checkbox contato.selecionado true
+            esse exemplo subistitui o {selecionado: contato.selecionado, negrito: contato.selecionado}
+        -->
+
+            <tr ng-class="{'selecionado negrito': contato.selecionado}" ng-repeat="contato in contatos">
+                <!-- td é o conteúdo dentro de uma tabela -->
+                <td><input type="checkbox" ng-model="contato.selecionado"></td>
+                <td>{{contato.nome}}</td>
+                <td>{{contato.telefone}}</td>
+                <td>{{contato.operadora.nome}}</td>
+                <!-- o ng-style atribui assim como o ng-class mas não uma classe e sim um stilo a tag  -->
+                <td>
+                    <div style="width: 20px; height: 20px" ng-style="{'background-color': contato.cor.valor}"></div>
+                </td>
+
+                <!-- outra forma de se fazer  -->
+                <!-- <td ng-repeat="(key,value) in contato">
+                    {{key + ": " + value}}
+                </td> -->
+
+            </tr>
+        </table>
+
+        <div>
+            <!-- A diretiva ng-model funciona inverso ao ng-bind ela vincula uma propriedade ao $scope
+            "Pega alguma coisa da view e define no $scope" 
+                usados em inputs, textAreas e selects
+            -->
+            <input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome">
+            <input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone">
+        </div>
+
+        <!--ng-options cria um select como o nome do campo definido pelo nome antes do for 
+            o operadora.codigo antes do as esta definindo que atributo do objeto operadora sera inserido no objeto contato 
+            excluindo os outros atributos do objeto operadora 
+            group by dentro da expressão define uma divisão dentro do select dividindo as opções por grupos Ex no caso Fixo e celular-->
+        <!-- ng-model faz a atribuição ao $scope contao.operadora  -->
+        <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+            <option value="">Selecione uma operadora</option>
+        </select>
+
+        <select class="form-control" ng-model="contato.cor" ng-options="cor.nome for cor in cores">
+            <option value="">Selecione uma cor</option>
+        </select>
+
+        <!-- ng-click reage ao evendo click chamando uma função definida no controller -->
+        <!-- ng-disabled deixa desabilita o campo ou botao de acordo com algum parametro passado, neste exempo se nao
+        existir contato.nome ou contato.telefone no scope ele desabilita  -->
+        <button type="" class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Salvar</button>
+
+        <!-- ng-show mostra o elemento dependendo da sua condição neste caso se o contato estiver selecionado ele está mostrado  -->
+        <button type="" class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-show="isSelecionado(contatos)">Apagar</button>
+
+        <!-- ng-hide não mostra o elemento dependendo da sua condição funciona da mesma forma do show  -->
+        <!-- <button type="" class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-hide="!isSelecionado(contatos)">Apagar</button> -->
+
+        <!-- ng-if interage com a DOM excluindo sua tag dependendo do parametro passado igual ao ng-show melhor utilizado para performance -->
+        <!-- <button type="" class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-if="isSelecionado(contatos)">Apagar</button> -->
+
+    </div>
+
+    <!-- inclui o footer de outro html nao funciona no chrome -->
+    <!-- <div ng-include="'footer.html'"></div> -->
+
+</body>
+
+</html>
