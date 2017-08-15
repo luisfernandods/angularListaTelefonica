@@ -13,155 +13,10 @@
     <title>Lista Telefonica</title>
 
     <script src="lib/angular.js"></script>
+    <script src="lib/angular-messages.js"></script>
+    <script src="server/controllers/index.js"></script>
     <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.css">
-
-    <style>
-        .jumbotron {
-            width: 400px;
-            margin-top: 20px;
-            text-align: center;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .table {
-            margin-top: 2px;
-        }
-
-        .form-control {
-            margin-bottom: 5px;
-        }
-
-        .selecionado {
-            background-color: darkgray;
-        }
-
-        .negrito {
-            font-style: bold;
-        }
-    </style>
-
-    <script>
-        // o [] representa os modulos que importaremos do angular
-        angular.module('listaTelefonica', []);
-
-        // define o controller passando de callback uma function que recebe o $scope
-        angular.module('listaTelefonica').controller('listaTelefonicaCrtl', function ($scope) {
-            $scope.app = "Lista Telefonica";
-
-
-
-            $scope.operadoras = [{
-                    nome: "Oi",
-                    codigo: 14,
-                    categoria: "Celular"
-                },
-                {
-                    nome: "Vivo",
-                    codigo: 15,
-                    categoria: "Celular"
-                },
-                {
-                    nome: "Tim",
-                    codigo: 41,
-                    categoria: "Celular"
-                },
-                {
-                    nome: "GVT",
-                    codigo: 25,
-                    categoria: "Fixo"
-                },
-                {
-                    nome: "Embratel",
-                    codigo: 21,
-                    categoria: "Fixo"
-                }
-            ];
-
-            $scope.cores = [{
-                    nome: "Vermelho",
-                    valor: "red"
-                },
-                {
-                    nome: "Azul",
-                    valor: "blue"
-                },
-                {
-                    nome: "Verde",
-                    valor: "green"
-                },
-                {
-                    nome: "Rosa",
-                    valor: "pink"
-                }
-            ];
-
-            $scope.contatos = [{
-                    nome: "Luis",
-                    telefone: "9999-9999",
-                    operadora: {
-                        nome: $scope.operadoras[0].nome
-                    },
-                    cor: {
-                        valor: $scope.cores[0].valor
-                    }
-                },
-                {
-                    nome: "Joao",
-                    telefone: "9999-8888",
-                    operadora: {
-                        nome: $scope.operadoras[2].nome
-                    },
-                    cor: {
-                        valor: $scope.cores[1].valor
-                    }
-                },
-                {
-                    nome: "Paulo",
-                    telefone: "9999-7777",
-                    operadora: {
-                        nome: $scope.operadoras[1].nome
-                    },
-                    cor: {
-                        valor: $scope.cores[2].valor
-                    }
-                },
-                {
-                    nome: "Maria",
-                    telefone: "9999-6666",
-                    operadora: {
-                        nome: $scope.operadoras[3].nome
-                    },
-                    cor: {
-                        valor: $scope.cores[3].valor
-                    }
-                },
-            ];
-
-            $scope.adicionarContato = function (contato) {
-                // o angular.copy cria uma copia do objeto contato e salva em memoria
-                $scope.contatos.push(angular.copy(contato));
-                // delete como o proprio nome diz deleta o $scope.contato após ser salvo
-                delete $scope.contato;
-            }
-
-            $scope.apagarContatos = function (contatos) {
-                // estudar o filter
-                $scope.contatos = contatos.filter(function (contato) {
-                    if (!contato.selecionado) {
-                        return contato;
-                    }
-                });
-            }
-
-            $scope.isSelecionado = function (contatos) {
-                return contatos.some(function (contato) {
-                    return contato.selecionado;
-                });
-            }
-        });
-    </script>
-
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/style.css">
 </head>
 
 <!-- O ng-controller define qual controller a parte do html irá responder 
@@ -218,8 +73,51 @@
             "Pega alguma coisa da view e define no $scope" 
                 usados em inputs, textAreas e selects
             -->
-            <input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome">
-            <input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone">
+            <form name="contatoForm">
+                <!-- <div ng-show="contatoForm.nome.$invalid && contatoForm.nome.$dirty" class="alert alert-danger">
+                    Nome Inválido
+                </div> -->
+                <div ng-show="contatoForm.nome.$error.required && contatoForm.nome.$dirty" class="alert alert-danger">
+                    Nome Inválido
+                </div>
+                <div ng-show="contatoForm.nome.$error.minlength" class="alert alert-danger">
+                    O campo nome deve ter no mínimo 5 Caracteres
+                </div>
+
+                <!-- O ng-messages funciona da mesma forma da validação acima fazendo um "switch" no contatoForm.$error  -->
+                <!-- <div ng-messages="contatoForm.nome.$error" class="alert alert-danger">
+                    <div ng-message="required">
+                        Nome Inválido
+                    </div>
+                    <div ng-message="minlength">
+                        O campo nome deve ter no mínimo 5 Caracteres
+                    </div>
+                </div> -->
+
+                <input ng-required="true" class="form-control" type="text" ng-minlength="5" ng-model="contato.nome" name="nome" placeholder="Nome">
+
+                <!-- <div ng-show="contatoForm.telefone.$invalid && contatoForm.telefone.$dirty" class="alert alert-danger">
+                    Telefone Inválido
+                </div> -->
+                <div ng-show="contatoForm.telefone.$error.required && contatoForm.telefone.$dirty" class="alert alert-danger">
+                    Telefone Inválido
+                </div>
+                <div ng-show="contatoForm.telefone.$error.pattern && contatoForm.telefone.$dirty" class="alert alert-danger">
+                    O telefone deve ser XXXXX-XXXX
+                </div>
+
+                <!-- <div ng-messages="contatoForm.telefone.$error" class="alert alert-danger">
+                    <div ng-message="required">
+                        Telefone Inválido
+                    </div>
+                    <div ng-message=" pattern ">
+                        O telefone deve ser XXXXX-XXXX
+                    </div>
+
+                </div> -->
+                <input ng-required="true " class="form-control " type="text " ng-model="contato.telefone " name="telefone
+                        " placeholder="Telefone " ng-pattern="/^\d{5}-\d{4}$/ ">
+            </form>
         </div>
 
         <!--ng-options cria um select como o nome do campo definido pelo nome antes do for 
@@ -227,32 +125,33 @@
             excluindo os outros atributos do objeto operadora 
             group by dentro da expressão define uma divisão dentro do select dividindo as opções por grupos Ex no caso Fixo e celular-->
         <!-- ng-model faz a atribuição ao $scope contao.operadora  -->
-        <select class="form-control" ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
-            <option value="">Selecione uma operadora</option>
+        <select class="form-control " ng-model="contato.operadora " ng-options="operadora.nome group by operadora.categoria
+                        for operadora in operadoras ">
+            <option value=" ">Selecione uma operadora</option>
         </select>
 
-        <select class="form-control" ng-model="contato.cor" ng-options="cor.nome for cor in cores">
-            <option value="">Selecione uma cor</option>
+        <select class="form-control " ng-model="contato.cor " ng-options="cor.nome for cor in cores ">
+            <option value=" ">Selecione uma cor</option>
         </select>
 
         <!-- ng-click reage ao evendo click chamando uma função definida no controller -->
         <!-- ng-disabled deixa desabilita o campo ou botao de acordo com algum parametro passado, neste exempo se nao
         existir contato.nome ou contato.telefone no scope ele desabilita  -->
-        <button type="" class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone">Salvar</button>
+        <button type=" " class="btn btn-primary btn-block " ng-click="adicionarContato(contato) " ng-disabled="contatoForm.$invalid ">Salvar</button>
 
         <!-- ng-show mostra o elemento dependendo da sua condição neste caso se o contato estiver selecionado ele está mostrado  -->
-        <button type="" class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-show="isSelecionado(contatos)">Apagar</button>
+        <button type=" " class="btn btn-danger btn-block " ng-click="apagarContatos(contatos) " ng-show="isSelecionado(contatos) ">Apagar</button>
 
         <!-- ng-hide não mostra o elemento dependendo da sua condição funciona da mesma forma do show  -->
-        <!-- <button type="" class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-hide="!isSelecionado(contatos)">Apagar</button> -->
+        <!-- <button type=" " class="btn btn-danger btn-block " ng-click="apagarContatos(contatos) " ng-hide="!isSelecionado(contatos) ">Apagar</button> -->
 
         <!-- ng-if interage com a DOM excluindo sua tag dependendo do parametro passado igual ao ng-show melhor utilizado para performance -->
-        <!-- <button type="" class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)" ng-if="isSelecionado(contatos)">Apagar</button> -->
+        <!-- <button type=" " class="btn btn-danger btn-block " ng-click="apagarContatos(contatos) " ng-if="isSelecionado(contatos) ">Apagar</button> -->
 
     </div>
 
     <!-- inclui o footer de outro html nao funciona no chrome -->
-    <!-- <div ng-include="'footer.html'"></div> -->
+    <!-- <div ng-include=" 'footer.html' "></div> -->
 
 </body>
 
