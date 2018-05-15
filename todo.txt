@@ -1,0 +1,6 @@
+Inserir handle de errors nas rotas no servidor
+Inserir mensagens de sucesso e de erro no frontend.
+Editar contato
+login
+Separas as rotas por funcionalidade
+
