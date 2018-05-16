@@ -1,21 +1,18 @@
-(function () {
-    'use strict';
+(function() {
+  "use strict";
 
-    angular
-        .module('listaTelefonica')
-        .factory('coresFactory', coresFactory)
+  angular.module("listaTelefonica").factory("coresFactory", coresFactory);
 
-    /** @ngInject */
-    function coresFactory($http) {
-        var service = {
-            getCores: getCores
-        }
+  /** @ngInject */
+  function coresFactory($http) {
+    var service = {
+      getCores: getCores
+    };
 
-        return service;
+    return service;
 
-        function getCores() {
-            return $http.get('http:localhost:3000/cores');
-        }
+    function getCores() {
+      return $http.get("/cores");
     }
-
-}());
+  }
+})();

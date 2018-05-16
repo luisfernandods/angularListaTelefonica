@@ -1,21 +1,20 @@
-(function () {
-    'use strict';
+(function() {
+  "use strict";
 
-    angular
-        .module('listaTelefonica')
-        .factory('operadoraFactory', operadoraFactory)
+  angular
+    .module("listaTelefonica")
+    .factory("operadoraFactory", operadoraFactory);
 
-    /** @ngInject */
-    function operadoraFactory($http) {
-        var service = {
-            getOperadoras: getOperadoras
-        }
+  /** @ngInject */
+  function operadoraFactory($http) {
+    var service = {
+      getOperadoras: getOperadoras
+    };
 
-        return service;
+    return service;
 
-        function getOperadoras() {
-            return $http.get('http:localhost:3000/operadoras');
-        }
+    function getOperadoras() {
+      return $http.get("/operadoras");
     }
-
-}());
+  }
+})();
